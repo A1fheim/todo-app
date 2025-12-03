@@ -1,0 +1,29 @@
+# Бинарники Go
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+todo-app
+
+# Папка для бинарников (если будешь туда собирать)
+bin/
+
+# Логи
+*.log
+
+# Конфиги и секреты
+.env
+.env.*
+config/local.yaml
+
+# IDE / редакторы
+.vscode/
+.idea/
+*.iml
+
+# ОС-мусор
+.DS_Store
+Thumbs.db
