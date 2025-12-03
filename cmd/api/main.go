@@ -1,21 +1,16 @@
 package main
 
 import (
-	"net/http"
+	"log"
 
-	"github.com/gin-gonic/gin"
+	"github.com/A1fheim/todo-app/internal/http/handler"
 )
 
 func main() {
-	router := gin.Default()
-
-	router.GET("/health", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{
-			"status": "ok",
-		})
-	})
+	h := handler.NewHandler()
+	router := h.InitRoutes()
 
 	if err := router.Run(":8080"); err != nil {
-		panic(err)
+		log.Fatalf("error starting server: %s", err)
 	}
 }
