@@ -6,12 +6,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type Handler struct{}
-
-func NewHandler() *Handler {
-	return &Handler{}
-}
-
 func (h *Handler) InitRoutes() *gin.Engine {
 	router := gin.Default()
 
@@ -21,7 +15,7 @@ func (h *Handler) InitRoutes() *gin.Engine {
 
 	todos := router.Group("/todos")
 	{
-		todos.Post("/", h.createTodo)
+		todos.POST("/", h.createTodo)
 	}
 
 	return router

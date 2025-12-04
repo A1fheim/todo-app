@@ -4,6 +4,7 @@ import (
 	"log"
 
 	"github.com/A1fheim/todo-app/internal/http/handler"
+	"github.com/A1fheim/todo-app/internal/service"
 )
 
 func main() {

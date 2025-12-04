@@ -17,7 +17,7 @@ func (h *Handler) createTodo(c *gin.Context) {
 
 	userID := int64(1)
 
-	todo, err := h.todoService.Create(c.Request.Context(), userID, input)
+	todo, err := h.todoService.CreateTodo(c.Request.Context(), userID, input)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
