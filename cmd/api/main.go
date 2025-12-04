@@ -7,7 +7,9 @@ import (
 )
 
 func main() {
-	h := handler.NewHandler()
+	todoService := service.NewInMemoryTodoService()
+
+	h := handler.NewHandler(todoService)
 	router := h.InitRoutes()
 
 	if err := router.Run(":8080"); err != nil {

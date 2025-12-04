@@ -19,5 +19,10 @@ func (h *Handler) InitRoutes() *gin.Engine {
 		c.JSON(http.StatusOK, gin.H{"status": "ok"})
 	})
 
+	todos := router.Group("/todos")
+	{
+		todos.Post("/", h.createTodo)
+	}
+
 	return router
 }
