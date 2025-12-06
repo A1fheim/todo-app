@@ -16,6 +16,8 @@ func (h *Handler) InitRoutes() *gin.Engine {
 	todos := router.Group("/todos")
 	{
 		todos.POST("/", h.createTodo)
+		todos.GET("/", h.listTodos)
+		todos.GET("/:id", h.getTodoByID)
 	}
 
 	return router
