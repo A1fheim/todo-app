@@ -70,3 +70,53 @@ func (h *Handler) getTodoByID(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, todo)
 }
+
+func (h *Handler) updateTodo(c *gin.Context) {
+	userID := int64(1)
+
+	idParam := c.Param("id")
+	id, err := strconv.ParseInt(idParam, 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid id"})
+		return
+	}
+
+	var input service.UpdateTodoInput
+	if err := c.BindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid JSON"})
+		return
+	}
+
+	todo, err := h.todoService.UpdateTodo(c.Request.Context(), userID, id, input)
+	if err != nil {
+		if errors.Is(err, service.ErrTodoNotFound) {
+			c.JSON(http.StatusNotFound, gin.H{"error": "todo not found"})
+			return
+		}
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
+		return
+	}
+	c.JSON(http.StatusOK, todo)
+}
+
+func (h *Handler) deleteTodo(c *gin.Context) {
+	userID := int64(1)
+
+	idParam := c.Param("id")
+	id, err := strconv.ParseInt(idParam, 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid id"})
+	}
+
+	err = h.todoService.DeleteTodo(c.Request.Context(), userID, id)
+	if err != nil {
+		if errors.Is(err, service.ErrTodoNotFound) {
+			c.JSON(http.StatusNotFound, gin.H{"error": "todo not found"})
+			return
+		}
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"status": "deleted"})
+}

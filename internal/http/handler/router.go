@@ -18,6 +18,8 @@ func (h *Handler) InitRoutes() *gin.Engine {
 		todos.POST("/", h.createTodo)
 		todos.GET("/", h.listTodos)
 		todos.GET("/:id", h.getTodoByID)
+		todos.PUT("/:id", h.updateTodo)
+		todos.DELETE("/:id", h.deleteTodo)
 	}
 
 	return router
