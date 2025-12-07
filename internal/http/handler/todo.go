@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/A1fheim/todo-app/internal/domain/todo"
 	"github.com/A1fheim/todo-app/internal/service"
 	"github.com/gin-gonic/gin"
 )
@@ -20,7 +21,7 @@ func NewHandler(todoService service.TodoService) *Handler {
 }
 
 func (h *Handler) createTodo(c *gin.Context) {
-	var input service.CreateTodoInput
+	var input todo.CreateInput
 
 	if err := c.BindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid JSON"})
@@ -29,13 +30,13 @@ func (h *Handler) createTodo(c *gin.Context) {
 
 	userID := int64(1)
 
-	todo, err := h.todoService.CreateTodo(c.Request.Context(), userID, input)
+	t, err := h.todoService.CreateTodo(c.Request.Context(), userID, input)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusCreated, todo)
+	c.JSON(http.StatusCreated, t)
 }
 
 func (h *Handler) listTodos(c *gin.Context) {
@@ -59,16 +60,16 @@ func (h *Handler) getTodoByID(c *gin.Context) {
 		return
 	}
 
-	todo, err := h.todoService.GetTodoByID(c.Request.Context(), userID, id)
+	t, err := h.todoService.GetTodoByID(c.Request.Context(), userID, id)
 	if err != nil {
-		if errors.Is(err, service.ErrTodoNotFound) {
+		if errors.Is(err, todo.ErrTodoNotFound) {
 			c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 			return
 		}
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
 		return
 	}
-	c.JSON(http.StatusOK, todo)
+	c.JSON(http.StatusOK, t)
 }
 
 func (h *Handler) updateTodo(c *gin.Context) {
@@ -81,22 +82,22 @@ func (h *Handler) updateTodo(c *gin.Context) {
 		return
 	}
 
-	var input service.UpdateTodoInput
+	var input todo.UpdateInput
 	if err := c.BindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid JSON"})
 		return
 	}
 
-	todo, err := h.todoService.UpdateTodo(c.Request.Context(), userID, id, input)
+	t, err := h.todoService.UpdateTodo(c.Request.Context(), userID, id, input)
 	if err != nil {
-		if errors.Is(err, service.ErrTodoNotFound) {
+		if errors.Is(err, todo.ErrTodoNotFound) {
 			c.JSON(http.StatusNotFound, gin.H{"error": "todo not found"})
 			return
 		}
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
 		return
 	}
-	c.JSON(http.StatusOK, todo)
+	c.JSON(http.StatusOK, t)
 }
 
 func (h *Handler) deleteTodo(c *gin.Context) {
@@ -106,11 +107,12 @@ func (h *Handler) deleteTodo(c *gin.Context) {
 	id, err := strconv.ParseInt(idParam, 10, 64)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid id"})
+		return
 	}
 
 	err = h.todoService.DeleteTodo(c.Request.Context(), userID, id)
 	if err != nil {
-		if errors.Is(err, service.ErrTodoNotFound) {
+		if errors.Is(err, todo.ErrTodoNotFound) {
 			c.JSON(http.StatusNotFound, gin.H{"error": "todo not found"})
 			return
 		}

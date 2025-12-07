@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"errors"
 
 	"github.com/A1fheim/todo-app/internal/domain/todo"
 	"github.com/jackc/pgx/v5"
@@ -61,7 +62,7 @@ func (r *TodoPostgres) GetByID(ctx context.Context, userID, id int64) (todo.Todo
 	)
 
 	if err != nil {
-		if err == pgx.ErrNoRows {
+		if errors.Is(err, pgx.ErrNoRows) {
 			return todo.Todo{}, todo.ErrTodoNotFound
 		}
 		return todo.Todo{}, err
@@ -84,7 +85,7 @@ func (r *TodoPostgres) List(ctx context.Context, userID int64) ([]todo.Todo, err
 	}
 	defer rows.Close()
 
-	todos := []todo.Todo{}
+	todos := make([]todo.Todo, 0)
 
 	for rows.Next() {
 		var t todo.Todo
@@ -132,7 +133,7 @@ func (r *TodoPostgres) Update(ctx context.Context, userID, id int64, input todo.
 	)
 
 	if err != nil {
-		if err == pgx.ErrNoRows {
+		if errors.Is(err, pgx.ErrNoRows) {
 			return todo.Todo{}, todo.ErrTodoNotFound
 		}
 		return todo.Todo{}, err
