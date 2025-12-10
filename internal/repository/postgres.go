@@ -16,12 +16,7 @@ func NewPostgresPool(host, port, user, password, dbname string) (*pgxpool.Pool, 
 		port,
 		dbname)
 
-	cfg, err := pgxpool.ParseConfig(dsn)
-	if err != nil {
-		return nil, err
-	}
-
-	pool, err := pgxpool.NewWithConfig(context.Background(), cfg)
+	pool, err := pgxpool.New(context.Background(), dsn)
 	if err != nil {
 		return nil, err
 	}

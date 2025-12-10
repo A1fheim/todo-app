@@ -4,22 +4,21 @@ import (
 	"context"
 
 	"github.com/A1fheim/todo-app/internal/domain/todo"
-	"github.com/A1fheim/todo-app/internal/repository"
 )
 
-type TodoService interface {
-	CreateTodo(ctx context.Context, userID int64, input todo.CreateInput) (todo.Todo, error)
-	GetTodoByID(ctx context.Context, userID, id int64) (todo.Todo, error)
-	ListTodos(ctx context.Context, userID int64) ([]todo.Todo, error)
-	UpdateTodo(ctx context.Context, userID, id int64, input todo.UpdateInput) (todo.Todo, error)
-	DeleteTodo(ctx context.Context, userID, id int64) error
+type TodoRepository interface {
+	Create(ctx context.Context, userID int64, input todo.CreateInput) (todo.Todo, error)
+	GetByID(ctx context.Context, userID, id int64) (todo.Todo, error)
+	List(ctx context.Context, userID int64) ([]todo.Todo, error)
+	Update(ctx context.Context, userID, id int64, input todo.UpdateInput) (todo.Todo, error)
+	Delete(ctx context.Context, userID, id int64) error
 }
 
 type TodoServiceImpl struct {
-	repo repository.TodoRepository
+	repo TodoRepository
 }
 
-func NewTodoService(repo repository.TodoRepository) *TodoServiceImpl {
+func NewTodoService(repo TodoRepository) *TodoServiceImpl {
 	return &TodoServiceImpl{repo: repo}
 }
 

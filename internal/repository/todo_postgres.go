@@ -23,17 +23,15 @@ func (r *TodoPostgres) Create(ctx context.Context, userID int64, input todo.Crea
 		VALUES ($1, $2, $3, $4, $5, NOW(), NOW())
 		RETURNING id, user_id, title, description, status, due_date, created_at, updated_at
 	`
+	var t todo.Todo
 
-	row := r.db.QueryRow(ctx, query,
+	err := r.db.QueryRow(ctx, query,
 		userID,
 		input.Title,
 		input.Description,
 		"todo",
 		input.DueDate,
-	)
-
-	var t todo.Todo
-	err := row.Scan(
+	).Scan(
 		&t.ID,
 		&t.UserID,
 		&t.Title,

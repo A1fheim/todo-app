@@ -1,20 +1,28 @@
 package handler
 
 import (
+	"context"
 	"errors"
 	"net/http"
 	"strconv"
 
 	"github.com/A1fheim/todo-app/internal/domain/todo"
-	"github.com/A1fheim/todo-app/internal/service"
 	"github.com/gin-gonic/gin"
 )
 
-type Handler struct {
-	todoService service.TodoService
+type TodoService interface {
+	CreateTodo(ctx context.Context, userID int64, input todo.CreateInput) (todo.Todo, error)
+	GetTodoByID(ctx context.Context, userID, id int64) (todo.Todo, error)
+	ListTodos(ctx context.Context, userID int64) ([]todo.Todo, error)
+	UpdateTodo(ctx context.Context, userID, id int64, input todo.UpdateInput) (todo.Todo, error)
+	DeleteTodo(ctx context.Context, userID, id int64) error
 }
 
-func NewHandler(todoService service.TodoService) *Handler {
+type Handler struct {
+	todoService TodoService
+}
+
+func NewHandler(todoService TodoService) *Handler {
 	return &Handler{
 		todoService: todoService,
 	}
