@@ -18,16 +18,14 @@ type TodoService interface {
 	DeleteTodo(ctx context.Context, userID, id int64) error
 }
 
-func getUserID(c *gin.Context) (int64, bool) {
-	v, ok := c.Get("userID")
-	if !ok {
-		return 0, false
+type Handler struct {
+	todoService TodoService
+}
+
+func NewHandler(todoService TodoService) *Handler {
+	return &Handler{
+		todoService: todoService,
 	}
-	id, ok := v.(int64)
-	if !ok {
-		return 0, false
-	}
-	return id, true
 }
 
 func (h *Handler) createTodo(c *gin.Context) {
@@ -38,11 +36,7 @@ func (h *Handler) createTodo(c *gin.Context) {
 		return
 	}
 
-	userID, ok := getUserID(c)
-	if !ok {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
-		return
-	}
+	userID := int64(1)
 
 	t, err := h.todoService.CreateTodo(c.Request.Context(), userID, input)
 	if err != nil {
@@ -54,11 +48,7 @@ func (h *Handler) createTodo(c *gin.Context) {
 }
 
 func (h *Handler) listTodos(c *gin.Context) {
-	userID, ok := getUserID(c)
-	if !ok {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
-		return
-	}
+	userID := int64(1)
 
 	todos, err := h.todoService.ListTodos(c.Request.Context(), userID)
 	if err != nil {
@@ -69,11 +59,7 @@ func (h *Handler) listTodos(c *gin.Context) {
 }
 
 func (h *Handler) getTodoByID(c *gin.Context) {
-	userID, ok := getUserID(c)
-	if !ok {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
-		return
-	}
+	userID := int64(1)
 
 	idParam := c.Param("id")
 	id, err := strconv.ParseInt(idParam, 10, 64)
@@ -95,11 +81,7 @@ func (h *Handler) getTodoByID(c *gin.Context) {
 }
 
 func (h *Handler) updateTodo(c *gin.Context) {
-	userID, ok := getUserID(c)
-	if !ok {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
-		return
-	}
+	userID := int64(1)
 
 	idParam := c.Param("id")
 	id, err := strconv.ParseInt(idParam, 10, 64)
@@ -127,11 +109,7 @@ func (h *Handler) updateTodo(c *gin.Context) {
 }
 
 func (h *Handler) deleteTodo(c *gin.Context) {
-	userID, ok := getUserID(c)
-	if !ok {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
-		return
-	}
+	userID := int64(1)
 
 	idParam := c.Param("id")
 	id, err := strconv.ParseInt(idParam, 10, 64)

@@ -28,21 +28,10 @@ func main() {
 	}
 	defer db.Close()
 
-	rdb, err := repository.NewRedisClient(cfg.Redis.Addr)
-	if err != nil {
-		log.Fatalf("failed to connect to redis: %v", err)
-	}
-
 	todoRepo := repository.NewTodoPostgres(db)
-	todoCache := repository.NewTodoRedis(rdb)
-	userRepo := repository.NewUserPostgres(db)
+	todoService := service.NewTodoService(todoRepo)
 
-	todoService := service.NewTodoService(todoRepo, todoCache)
-	authService := service.NewAuthService(userRepo, cfg.JWTSecret)
-
-	authHandler := handler.NewAuthHandler(authService)
-	h := handler.NewHandler(todoService, authHandler, cfg.JWTSecret)
-
+	h := handler.NewHandler(todoService)
 	router := h.InitRoutes()
 
 	if err := router.Run(":8080"); err != nil {
