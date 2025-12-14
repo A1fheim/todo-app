@@ -3,7 +3,13 @@ package config
 import "os"
 
 type Config struct {
-	Postgres PostgresConfig
+	Postgres  PostgresConfig
+	Redis     RedisConfig
+	JWTSecret string
+}
+
+type RedisConfig struct {
+	Addr string
 }
 
 type PostgresConfig struct {
@@ -22,6 +28,10 @@ func LoadConfig() *Config {
 			User:     os.Getenv("POSTGRES_USER"),
 			Password: os.Getenv("POSTGRES_PASSWORD"),
 			DBName:   os.Getenv("POSTGRES_DB"),
+		},
+		JWTSecret: os.Getenv("JWT_SECRET"),
+		Redis: RedisConfig{
+			Addr: os.Getenv("REDIS_ADDR"),
 		},
 	}
 }
