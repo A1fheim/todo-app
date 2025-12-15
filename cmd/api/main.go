@@ -28,13 +28,16 @@ func main() {
 	}
 	defer db.Close()
 
+	var todoCache service.TodoCache
+
 	rdb, err := repository.NewRedisClient(cfg.Redis.Addr)
 	if err != nil {
-		log.Fatalf("failed to connect to redis: %v", err)
+		log.Printf("redis is not available, cache disabled: %v", err)
+	} else {
+		todoCache = repository.NewTodoRedis(rdb)
 	}
 
 	todoRepo := repository.NewTodoPostgres(db)
-	todoCache := repository.NewTodoRedis(rdb)
 	userRepo := repository.NewUserPostgres(db)
 
 	todoService := service.NewTodoService(todoRepo, todoCache)

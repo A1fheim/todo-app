@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"time"
 
 	"github.com/redis/go-redis/v9"
 )
@@ -11,7 +12,10 @@ func NewRedisClient(addr string) (*redis.Client, error) {
 		Addr: addr,
 	})
 
-	if err := rdb.Ping(context.Background()).Err(); err != nil {
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	defer cancel()
+
+	if err := rdb.Ping(ctx).Err(); err != nil {
 		return nil, err
 	}
 	return rdb, nil
